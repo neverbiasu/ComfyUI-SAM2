@@ -231,7 +231,7 @@ def sam_segment(
     masks, scores, _ = predictor.predict(
         point_coords=None,
         point_labels=None,
-        boxes=boxes,
+        box=boxes,
         multimask_output=False
     )
     print("scores: ", scores)
