@@ -235,7 +235,7 @@ def sam_segment(
         multimask_output=False
     )
     print("scores: ", scores)
-    masks = masks.permute(1, 0, 2, 3).cpu().numpy()
+    masks = np.transpose(masks, (1, 0, 2, 3))
     return create_tensor_output(image_np, masks, boxes)
 
 
