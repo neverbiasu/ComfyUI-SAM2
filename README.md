@@ -2,19 +2,26 @@
 
 This project adapts the SAM2 to incorporate functionalities from [comfyui_segment_anything](https://github.com/storyicon/comfyui_segment_anything?tab=readme-ov-file#comfyui-segment-anything). Many thanks to continue-revolution for their foundational work.
 
+![image](assets/workflow.png)
+You can refer to this example workflow for a quickly try.
+
 ## Requirements
+
 Install the necessary Python dependencies with:
 ```sh
 pip3 install -r requirements.txt
 ```
 
 ## Models
+
 Models will be automatically downloaded when needed. Alternatively, you can download them manually as per the instructions below. If the download is slow, set the `HTTP_PROXY` and `HTTPS_PROXY` environment variables to use a proxy.
 
 ### BERT Base Uncased
+
 Download the model from [Hugging Face](https://huggingface.co/bert-base-uncased/tree/main) and place the files in the `models/bert-base-uncased` directory under ComfyUI.
 
 ### GroundingDino
+
 Download the models and config files to `models/grounding-dino` under the ComfyUI root directory. Do not modify the file names.
 
 | Name                       | Size  | Config File  | Model File  |
@@ -23,6 +30,7 @@ Download the models and config files to `models/grounding-dino` under the ComfyU
 | GroundingDINO_SwinB        | 938MB | [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/GroundingDINO_SwinB.cfg.py)| [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/groundingdino_swinb_cogcoor.pth)|
 
 ### SAM 2
+
 Download the model files to `models/sams` under the ComfyUI root directory. Do not modify the file names.
 
 | Model                | Size   | Model File     |
@@ -33,9 +41,11 @@ Download the model files to `models/sams` under the ComfyUI root directory. Do n
 | sam2_hiera_large     | 224.4MB| [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_large.pt)  |
 
 ### Contribution
+
 Thank you for considering contributions! Fork the repository, make changes, and send a pull request for review and merging.
 
 ### Citing SAM 2
+
 If you use SAM 2 or the SA-V dataset in your research, cite the following:
 ```bibtex
 @article{ravi2024sam2,
