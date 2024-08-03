@@ -10,6 +10,6 @@ Repository = "https://github.com/neverbiasu/ComfyUI-SAM2"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "faych"
 DisplayName = "ComfyUI-SAM2"
 Icon = ""
