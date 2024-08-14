@@ -277,9 +277,9 @@ class SAM2ImagePredictor:
             return_logits=return_logits,
         )
 
-        masks_np = masks.squeeze(0).float().detach().cpu().numpy()
-        iou_predictions_np = iou_predictions.squeeze(0).float().detach().cpu().numpy()
-        low_res_masks_np = low_res_masks.squeeze(0).float().detach().cpu().numpy()
+        masks_np = masks.float().detach().cpu().numpy()
+        iou_predictions_np = iou_predictions.float().detach().cpu().numpy()
+        low_res_masks_np = low_res_masks.float().detach().cpu().numpy()
         return masks_np, iou_predictions_np, low_res_masks_np
 
     def _prep_prompts(
