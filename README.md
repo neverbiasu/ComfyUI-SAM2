@@ -8,8 +8,9 @@ You can refer to this example workflow for a quickly try.
 ## Requirements
 
 Install the necessary Python dependencies with:
+
 ```sh
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Models
@@ -24,29 +25,34 @@ Download the model from [Hugging Face](https://huggingface.co/bert-base-uncased/
 
 Download the models and config files to `models/grounding-dino` under the ComfyUI root directory. Do not modify the file names.
 
-| Name                       | Size  | Config File  | Model File  |
-|----------------------------|-------|--------------|-------------|
-| GroundingDINO_SwinT_OGC    | 694MB | [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/GroundingDINO_SwinT_OGC.cfg.py)| [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/groundingdino_swint_ogc.pth)|
-| GroundingDINO_SwinB        | 938MB | [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/GroundingDINO_SwinB.cfg.py)| [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/groundingdino_swinb_cogcoor.pth)|
+| Name                    | Size  | Config File                                                                                                  | Model File                                                                                                    |
+| ----------------------- | ----- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| GroundingDINO_SwinT_OGC | 694MB | [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/GroundingDINO_SwinT_OGC.cfg.py) | [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/groundingdino_swint_ogc.pth)     |
+| GroundingDINO_SwinB     | 938MB | [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/GroundingDINO_SwinB.cfg.py)     | [download link](https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/groundingdino_swinb_cogcoor.pth) |
 
 ### SAM 2
 
 Download the model files to `models/sams` under the ComfyUI root directory. Do not modify the file names.
 
-| Model                | Size   | Model File     |
-|----------------------|--------|----------------|
-| sam2_hiera_tiny      | 38.9MB | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_tiny.pt)  |
-| sam2_hiera_small     | 46MB   | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_small.pt)  |
-| sam2_hiera_base_plus | 80.8MB | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_base_plus.pt)  |
-| sam2_hiera_large     | 224.4MB| [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_large.pt)  |
+| Model                | Size    | Model File                                                                                        |
+| -------------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| sam2_hiera_tiny      | 38.9MB  | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_tiny.pt)      |
+| sam2_hiera_small     | 46MB    | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_small.pt)     |
+| sam2_hiera_base_plus | 80.8MB  | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_base_plus.pt) |
+| sam2_hiera_large     | 224.4MB | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_large.pt)     |
 
 ### Contribution
 
 Thank you for considering contributions! Fork the repository, make changes, and send a pull request for review and merging.
 
+### Credits
+
+[The fastest way to run Meta's SAM 2 (Segment Anything Model 2)](https://www.sievedata.com/blog/meta-segment-anything-2-sam2-introduction)
+
 ### Citing SAM 2
 
 If you use SAM 2 or the SA-V dataset in your research, cite the following:
+
 ```bibtex
 @article{ravi2024sam2,
   title={SAM 2: Segment Anything in Images and Videos},
