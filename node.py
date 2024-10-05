@@ -247,9 +247,9 @@ class SAM2ModelLoader:
                 "model_name": (list_sam_model(), ),
             }
         }
-    CATEGORY = "segment_anything"
+    CATEGORY = "segment_anything2"
     FUNCTION = "main"
-    RETURN_TYPES = ("SAM_MODEL", )
+    RETURN_TYPES = ("SAM2_MODEL", )
 
     def main(self, model_name):
         sam_model = load_sam_model(model_name)
@@ -264,7 +264,7 @@ class GroundingDinoModelLoader:
                 "model_name": (list_groundingdino_model(), ),
             }
         }
-    CATEGORY = "segment_anything"
+    CATEGORY = "segment_anything2"
     FUNCTION = "main"
     RETURN_TYPES = ("GROUNDING_DINO_MODEL", )
 
@@ -273,12 +273,12 @@ class GroundingDinoModelLoader:
         return (dino_model, )
 
 
-class GroundingDinoSAMSegment:
+class GroundingDinoSAM2Segment:
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "sam_model": ('SAM_MODEL', {}),
+                "sam_model": ('SAM2_MODEL', {}),
                 "grounding_dino_model": ('GROUNDING_DINO_MODEL', {}),
                 "image": ('IMAGE', {}),
                 "prompt": ("STRING", {}),
@@ -290,7 +290,7 @@ class GroundingDinoSAMSegment:
                 }),
             }
         }
-    CATEGORY = "segment_anything"
+    CATEGORY = "segment_anything2"
     FUNCTION = "main"
     RETURN_TYPES = ("IMAGE", "MASK")
 
@@ -330,7 +330,7 @@ class InvertMask:
                 "mask": ("MASK",),
             }
         }
-    CATEGORY = "segment_anything"
+    CATEGORY = "segment_anything2"
     FUNCTION = "main"
     RETURN_TYPES = ("MASK",)
 
@@ -350,7 +350,7 @@ class IsMaskEmptyNode:
     RETURN_NAMES = ["boolean_number"]
 
     FUNCTION = "main"
-    CATEGORY = "segment_anything"
+    CATEGORY = "segment_anything2"
 
     def main(self, mask):
         return (torch.all(mask == 0).int().item(), )
