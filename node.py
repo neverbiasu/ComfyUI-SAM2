@@ -37,7 +37,7 @@ sam_model_list = {
     },
     "sam2_hiera_large.pt": {
         "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_large.pt"
-    }
+    },
     "sam2_1_hiera_tiny": {
         "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt"
     },
