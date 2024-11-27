@@ -1,8 +1,7 @@
 import os
 import sys
-sys.path.append(
-    os.path.dirname(os.path.abspath(__file__))
-)
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import copy
 import torch
@@ -16,13 +15,15 @@ import comfy.model_management
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 from local_groundingdino.datasets import transforms as T
-from local_groundingdino.util.utils import clean_state_dict as local_groundingdino_clean_state_dict
+from local_groundingdino.util.utils import (
+    clean_state_dict as local_groundingdino_clean_state_dict,
+)
 from local_groundingdino.util.slconfig import SLConfig as local_groundingdino_SLConfig
 from local_groundingdino.models import build_model as local_groundingdino_build_model
 import glob
 import folder_paths
 
-logger = logging.getLogger('ComfyUI-SAM2')
+logger = logging.getLogger("ComfyUI-SAM2")
 
 sam_model_dir_name = "sam2"
 sam_model_list = {
@@ -49,7 +50,7 @@ sam_model_list = {
     },
     "sam2_1_hiera_large.pt": {
         "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2_hiera_large.pt"
-    }
+    },
 }
 
 groundingdino_model_dir_name = "grounding-dino"
@@ -60,19 +61,27 @@ groundingdino_model_list = {
     },
     "GroundingDINO_SwinB (938MB)": {
         "config_url": "https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/GroundingDINO_SwinB.cfg.py",
-        "model_url": "https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/groundingdino_swinb_cogcoor.pth"
-    }
+        "model_url": "https://huggingface.co/ShilongLiu/GroundingDINO/resolve/main/groundingdino_swinb_cogcoor.pth",
+    },
 }
 
+
 def get_bert_base_uncased_model_path():
-    comfy_bert_model_base = os.path.join(folder_paths.models_dir, 'bert-base-uncased')
-    if glob.glob(os.path.join(comfy_bert_model_base, '**/model.safetensors'), recursive=True):
-        print('grounding-dino is using models/bert-base-uncased')
+    comfy_bert_model_base = os.path.join(folder_paths.models_dir, "bert-base-uncased")
+    if glob.glob(
+        os.path.join(comfy_bert_model_base, "**/model.safetensors"), recursive=True
+    ):
+        print("grounding-dino is using models/bert-base-uncased")
         return comfy_bert_model_base
-    return 'bert-base-uncased'
+    return "bert-base-uncased"
+
 
 def list_files(dirpath, extensions=[]):
-    return [f for f in os.listdir(dirpath) if os.path.isfile(os.path.join(dirpath, f)) and f.split('.')[-1] in extensions]
+    return [
+        f
+        for f in os.listdir(dirpath)
+        if os.path.isfile(os.path.join(dirpath, f)) and f.split(".")[-1] in extensions
+    ]
 
 
 def list_sam_model():
@@ -81,9 +90,10 @@ def list_sam_model():
 
 def load_sam_model(model_name):
     sam2_checkpoint_path = get_local_filepath(
-        sam_model_list[model_name]["model_url"], sam_model_dir_name)
+        sam_model_list[model_name]["model_url"], sam_model_dir_name
+    )
     model_file_name = os.path.basename(sam2_checkpoint_path)
-    model_type = model_file_name.split('.')[0]
+    model_type = model_file_name.split(".")[0]
     model_cfg = model_type + ".yaml"
     sam_device = comfy.model_management.get_torch_device()
     sam = build_sam2(model_cfg, sam2_checkpoint_path, device=sam_device)
@@ -98,7 +108,7 @@ def get_local_filepath(url, dirname, local_file_name=None):
 
     destination = folder_paths.get_full_path(dirname, local_file_name)
     if destination:
-        logger.warn(f'using extra model: {destination}')
+        logger.warn(f"using extra model: {destination}")
         return destination
 
     folder = os.path.join(folder_paths.models_dir, dirname)
@@ -107,7 +117,7 @@ def get_local_filepath(url, dirname, local_file_name=None):
 
     destination = os.path.join(folder, local_file_name)
     if not os.path.exists(destination):
-        logger.warn(f'downloading {url} to {destination}')
+        logger.warn(f"downloading {url} to {destination}")
         download_url_to_file(url, destination)
     return destination
 
@@ -116,13 +126,13 @@ def load_groundingdino_model(model_name):
     dino_model_args = local_groundingdino_SLConfig.fromfile(
         get_local_filepath(
             groundingdino_model_list[model_name]["config_url"],
-            groundingdino_model_dir_name
+            groundingdino_model_dir_name,
         ),
     )
 
-    if dino_model_args.text_encoder_type == 'bert-base-uncased':
+    if dino_model_args.text_encoder_type == "bert-base-uncased":
         dino_model_args.text_encoder_type = get_bert_base_uncased_model_path()
-    
+
     dino = local_groundingdino_build_model(dino_model_args)
     checkpoint = torch.load(
         get_local_filepath(
@@ -130,8 +140,9 @@ def load_groundingdino_model(model_name):
             groundingdino_model_dir_name,
         ),
     )
-    dino.load_state_dict(local_groundingdino_clean_state_dict(
-        checkpoint['model']), strict=False)
+    dino.load_state_dict(
+        local_groundingdino_clean_state_dict(checkpoint["model"]), strict=False
+    )
     device = comfy.model_management.get_torch_device()
     dino.to(device=device)
     dino.eval()
@@ -142,12 +153,7 @@ def list_groundingdino_model():
     return list(groundingdino_model_list.keys())
 
 
-def groundingdino_predict(
-    dino_model,
-    image,
-    prompt,
-    threshold
-):
+def groundingdino_predict(dino_model, image, prompt, threshold):
     def load_dino_image(image_pil):
         transform = T.Compose(
             [
@@ -179,9 +185,7 @@ def groundingdino_predict(
         return boxes_filt.cpu()
 
     dino_image = load_dino_image(image.convert("RGB"))
-    boxes_filt = get_grounding_output(
-        dino_model, dino_image, prompt, threshold
-    )
+    boxes_filt = get_grounding_output(dino_model, dino_image, prompt, threshold)
     H, W = image.size[1], image.size[0]
     for i in range(boxes_filt.size(0)):
         boxes_filt[i] = boxes_filt[i] * torch.Tensor([W, H, W, H])
@@ -207,8 +211,7 @@ def create_tensor_output(image_np, masks, boxes_filt):
     for mask in masks:
         image_np_copy = copy.deepcopy(image_np)
         image_np_copy[~np.any(mask, axis=0)] = np.array([0, 0, 0, 0])
-        output_image, output_mask = split_image_mask(
-            Image.fromarray(image_np_copy))
+        output_image, output_mask = split_image_mask(Image.fromarray(image_np_copy))
         output_masks.append(output_mask)
         output_images.append(output_image)
     return (output_images, output_masks)
@@ -218,19 +221,15 @@ def split_image_mask(image):
     image_rgb = image.convert("RGB")
     image_rgb = np.array(image_rgb).astype(np.float32) / 255.0
     image_rgb = torch.from_numpy(image_rgb)[None,]
-    if 'A' in image.getbands():
-        mask = np.array(image.getchannel('A')).astype(np.float32) / 255.0
+    if "A" in image.getbands():
+        mask = np.array(image.getchannel("A")).astype(np.float32) / 255.0
         mask = torch.from_numpy(mask)[None,]
     else:
         mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
     return (image_rgb, mask)
 
 
-def sam_segment(
-    sam_model,
-    image,
-    boxes
-):
+def sam_segment(sam_model, image, boxes):
     if boxes.shape[0] == 0:
         return None
     predictor = SAM2ImagePredictor(sam_model)
@@ -241,10 +240,7 @@ def sam_segment(
     #     boxes, image_np.shape[:2])
     sam_device = comfy.model_management.get_torch_device()
     masks, scores, _ = predictor.predict(
-        point_coords=None,
-        point_labels=None,
-        box=boxes,
-        multimask_output=False
+        point_coords=None, point_labels=None, box=boxes, multimask_output=False
     )
     print("scores: ", scores)
     masks = np.transpose(masks, (1, 0, 2, 3))
@@ -256,16 +252,17 @@ class SAM2ModelLoader:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model_name": (list_sam_model(), ),
+                "model_name": (list_sam_model(),),
             }
         }
+
     CATEGORY = "segment_anything2"
     FUNCTION = "main"
-    RETURN_TYPES = ("SAM2_MODEL", )
+    RETURN_TYPES = ("SAM2_MODEL",)
 
     def main(self, model_name):
         sam_model = load_sam_model(model_name)
-        return (sam_model, )
+        return (sam_model,)
 
 
 class GroundingDinoModelLoader:
@@ -273,16 +270,17 @@ class GroundingDinoModelLoader:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model_name": (list_groundingdino_model(), ),
+                "model_name": (list_groundingdino_model(),),
             }
         }
+
     CATEGORY = "segment_anything2"
     FUNCTION = "main"
-    RETURN_TYPES = ("GROUNDING_DINO_MODEL", )
+    RETURN_TYPES = ("GROUNDING_DINO_MODEL",)
 
     def main(self, model_name):
         dino_model = load_groundingdino_model(model_name)
-        return (dino_model, )
+        return (dino_model,)
 
 
 class GroundingDinoSAM2Segment:
@@ -290,18 +288,17 @@ class GroundingDinoSAM2Segment:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "sam_model": ('SAM2_MODEL', {}),
-                "grounding_dino_model": ('GROUNDING_DINO_MODEL', {}),
-                "image": ('IMAGE', {}),
+                "sam_model": ("SAM2_MODEL", {}),
+                "grounding_dino_model": ("GROUNDING_DINO_MODEL", {}),
+                "image": ("IMAGE", {}),
                 "prompt": ("STRING", {}),
-                "threshold": ("FLOAT", {
-                    "default": 0.3,
-                    "min": 0,
-                    "max": 1.0,
-                    "step": 0.01
-                }),
+                "threshold": (
+                    "FLOAT",
+                    {"default": 0.3, "min": 0, "max": 1.0, "step": 0.01},
+                ),
             }
         }
+
     CATEGORY = "segment_anything2"
     FUNCTION = "main"
     RETURN_TYPES = ("IMAGE", "MASK")
@@ -311,25 +308,19 @@ class GroundingDinoSAM2Segment:
         res_masks = []
         for item in image:
             item = Image.fromarray(
-                np.clip(255. * item.cpu().numpy(), 0, 255).astype(np.uint8)).convert('RGBA')
-            boxes = groundingdino_predict(
-                grounding_dino_model,
-                item,
-                prompt,
-                threshold
-            )
+                np.clip(255.0 * item.cpu().numpy(), 0, 255).astype(np.uint8)
+            ).convert("RGBA")
+            boxes = groundingdino_predict(grounding_dino_model, item, prompt, threshold)
             if boxes.shape[0] == 0:
                 break
-            (images, masks) = sam_segment(
-                sam_model,
-                item,
-                boxes
-            )
+            (images, masks) = sam_segment(sam_model, item, boxes)
             res_images.extend(images)
             res_masks.extend(masks)
         if len(res_images) == 0:
             _, height, width, _ = image.size()
-            empty_mask = torch.zeros((1, height, width), dtype=torch.uint8, device="cpu")
+            empty_mask = torch.zeros(
+                (1, height, width), dtype=torch.uint8, device="cpu"
+            )
             return (empty_mask, empty_mask)
         return (torch.cat(res_images, dim=0), torch.cat(res_masks, dim=0))
 
@@ -342,6 +333,7 @@ class InvertMask:
                 "mask": ("MASK",),
             }
         }
+
     CATEGORY = "segment_anything2"
     FUNCTION = "main"
     RETURN_TYPES = ("MASK",)
@@ -349,6 +341,7 @@ class InvertMask:
     def main(self, mask):
         out = 1.0 - mask
         return (out,)
+
 
 class IsMaskEmptyNode:
     @classmethod
@@ -358,6 +351,7 @@ class IsMaskEmptyNode:
                 "mask": ("MASK",),
             },
         }
+
     RETURN_TYPES = ["NUMBER"]
     RETURN_NAMES = ["boolean_number"]
 
@@ -365,4 +359,4 @@ class IsMaskEmptyNode:
     CATEGORY = "segment_anything2"
 
     def main(self, mask):
-        return (torch.all(mask == 0).int().item(), )
+        return (torch.all(mask == 0).int().item(),)
