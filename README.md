@@ -45,14 +45,6 @@ Download the model files to `models/sams` under the ComfyUI root directory. Do n
 
 Thank you for considering contributions! Fork the repository, make changes, and send a pull request for review and merging.
 
-### Credits
-
-[The fastest way to run Meta's SAM 2 (Segment Anything Model 2)](https://www.sievedata.com/blog/meta-segment-anything-2-sam2-introduction)
-
-[The easiest way to experience LoRA-Scripts docker image](https://www.compshare.cn/images-detail?ImageID=compshareImage-14nu6a81gfdj&ImageType=Community&ytag=cs_Faych_image)
-
-[The easiest way to experience ChatTTS docker image](https://www.compshare.cn/images-detail?ImageID=compshareImage-14cv0d5w5vav&ImageType=Community&ytag=cs_Faych_image)
-
 ### Citing SAM 2
 
 If you use SAM 2 or the SA-V dataset in your research, cite the following:
