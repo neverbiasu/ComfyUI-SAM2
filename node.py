@@ -46,10 +46,10 @@ sam_model_list = {
         "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_small.pt"
     },
     "sam2_1_hiera_base_plus.pt": {
-        "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2_hiera_base_plus.pt"
+        "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_base_plus.pt"
     },
     "sam2_1_hiera_large.pt": {
-        "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2_hiera_large.pt"
+        "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_large.pt"
     },
 }
 
@@ -93,8 +93,8 @@ def load_sam_model(model_name):
         sam_model_list[model_name]["model_url"], sam_model_dir_name
     )
     model_file_name = os.path.basename(sam2_checkpoint_path)
-    model_type = model_file_name.split(".")[0]
-    model_cfg = model_type + ".yaml"
+    model_type = model_file_name.rsplit(".", 1)[0]
+    model_cfg = '../sam2_configs/' + model_type + ".yaml"
     sam_device = comfy.model_management.get_torch_device()
     sam = build_sam2(model_cfg, sam2_checkpoint_path, device=sam_device)
     sam.model_name = model_file_name
