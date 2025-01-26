@@ -22,6 +22,8 @@ from local_groundingdino.util.slconfig import SLConfig as local_groundingdino_SL
 from local_groundingdino.models import build_model as local_groundingdino_build_model
 import glob
 import folder_paths
+from hydra import initialize
+from hydra.core.global_hydra import GlobalHydra
 
 logger = logging.getLogger("ComfyUI-SAM2")
 
@@ -90,16 +92,25 @@ def list_sam_model():
 
 def load_sam_model(model_name):
     sam2_checkpoint_path = get_local_filepath(
-        sam_model_list[model_name]["model_url"], sam_model_dir_name
-    )
+        sam_model_list[model_name]["model_url"], sam_model_dir_name)
     model_file_name = os.path.basename(sam2_checkpoint_path)
-    model_type = model_file_name.rsplit(".", 1)[0]
-    model_cfg = '../sam2_configs/' + model_type + ".yaml"
+    if 'sam2_1' in model_name:
+        parts = model_file_name.split('.')
+        model_type = f"{parts[0]}.{parts[1]}"
+    else:
+        model_type = model_file_name.split('.')[0]
+    
+    if GlobalHydra().is_initialized():
+        GlobalHydra.instance().clear()
+    
+    config_path = "sam2_configs"
+    initialize(config_path=config_path)
+    model_cfg = f"{model_type}.yaml"
+
     sam_device = comfy.model_management.get_torch_device()
     sam = build_sam2(model_cfg, sam2_checkpoint_path, device=sam_device)
     sam.model_name = model_file_name
     return sam
-
 
 def get_local_filepath(url, dirname, local_file_name=None):
     if not local_file_name:
