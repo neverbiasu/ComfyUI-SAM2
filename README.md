@@ -32,7 +32,20 @@ Download the models and config files to `models/grounding-dino` under the ComfyU
 
 ### SAM 2
 
-Download the model files to `models/sams` under the ComfyUI root directory. Do not modify the file names.
+Download the model files to `models/sam2` under the ComfyUI root directory. Do not modify the file names.
+
+**SAM 2.1 checkpoints**
+The table below shows the improved SAM 2.1 checkpoints released on September 29, 2024.
+
+| Model                  | Size  | Model File                                                                                          |
+| ---------------------- | ----- | --------------------------------------------------------------------------------------------------- |
+| sam2.1_hiera_tiny      | 148MB | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt)      |
+| sam2.1_hiera_small     | 176MB | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_small.pt)     |
+| sam2.1_hiera_base_plus | 308MB | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_base_plus.pt) |
+| sam2.1_hiera_large     | 856MB | [download link](https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_large.pt)     |
+
+**SAM 2 checkpoints**
+The previous SAM 2 checkpoints released on July 29, 2024 can be found as follows:
 
 | Model                | Size    | Model File                                                                                        |
 | -------------------- | ------- | ------------------------------------------------------------------------------------------------- |
