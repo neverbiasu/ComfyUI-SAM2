@@ -41,7 +41,7 @@ sam_model_list = {
     "sam2_hiera_large.pt": {
         "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_large.pt"
     },
-    "sam2_1_hiera_tiny": {
+    "sam2_1_hiera_tiny.pt": {
         "model_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt"
     },
     "sam2_1_hiera_small.pt": {
@@ -92,17 +92,14 @@ def list_sam_model():
 
 def load_sam_model(model_name):
     sam2_checkpoint_path = get_local_filepath(
-        sam_model_list[model_name]["model_url"], sam_model_dir_name)
+        sam_model_list[model_name]["model_url"], sam_model_dir_name
+    )
     model_file_name = os.path.basename(sam2_checkpoint_path)
-    if 'sam2_1' in model_name:
-        parts = model_file_name.split('.')
-        model_type = f"{parts[0]}.{parts[1]}"
-    else:
-        model_type = model_file_name.split('.')[0]
-    
+    model_type = model_file_name.split(".")[0]
+
     if GlobalHydra().is_initialized():
         GlobalHydra.instance().clear()
-    
+
     config_path = "sam2_configs"
     initialize(config_path=config_path)
     model_cfg = f"{model_type}.yaml"
@@ -111,6 +108,7 @@ def load_sam_model(model_name):
     sam = build_sam2(model_cfg, sam2_checkpoint_path, device=sam_device)
     sam.model_name = model_file_name
     return sam
+
 
 def get_local_filepath(url, dirname, local_file_name=None):
     if not local_file_name:
