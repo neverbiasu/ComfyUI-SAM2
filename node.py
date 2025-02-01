@@ -95,6 +95,7 @@ def load_sam_model(model_name):
         sam_model_list[model_name]["model_url"], sam_model_dir_name
     )
     model_file_name = os.path.basename(sam2_checkpoint_path)
+    model_file_name = model_file_name.replace("2.1", "2_1")
     model_type = model_file_name.split(".")[0]
 
     if GlobalHydra().is_initialized():
