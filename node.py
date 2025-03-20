@@ -253,6 +253,10 @@ def sam_segment(sam_model, image, boxes):
         point_coords=None, point_labels=None, box=boxes, multimask_output=False
     )
     print("scores: ", scores)
+    print("masks shape before any modification:", masks.shape)
+    if masks.ndim == 3:
+        masks = np.expand_dims(masks, axis=0)
+    print("masks shape after ensuring 4D:", masks.shape)
     masks = np.transpose(masks, (1, 0, 2, 3))
     return create_tensor_output(image_np, masks, boxes)
 
