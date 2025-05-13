@@ -246,8 +246,6 @@ def sam_segment(sam_model, image, boxes):
     image_np = np.array(image)
     image_np_rgb = image_np[..., :3]
     predictor.set_image(image_np_rgb)
-    # transformed_boxes = predictor.transform.apply_boxes_torch(
-    #     boxes, image_np.shape[:2])
     sam_device = comfy.model_management.get_torch_device()
     masks, scores, _ = predictor.predict(
         point_coords=None, point_labels=None, box=boxes, multimask_output=False
