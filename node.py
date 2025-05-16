@@ -336,6 +336,76 @@ class GroundingDinoSAM2Segment:
             return (empty_mask, empty_mask)
         return (torch.cat(res_images, dim=0), torch.cat(res_masks, dim=0))
 
+class GroundingDinoSAM2MultiPromptsSegment:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "sam_model": ('SAM2_MODEL', {}),
+                "grounding_dino_model": ('GROUNDING_DINO_MODEL', {}),
+                "image": ('IMAGE', {}),
+                "prompt": ("STRING", {}),
+                "threshold": ("FLOAT", {
+                    "default": 0.3,
+                    "min": 0,
+                    "max": 1.0,
+                    "step": 0.01
+                }),
+            }
+        }
+    CATEGORY = "segment_anything2"
+    FUNCTION = "main"
+    RETURN_TYPES = ("IMAGE", "MASK", "BOOLEAN", "INT")
+    RETURN_NAMES = ("images", "masks", "legal_outputs", "prompts_mask_order")
+
+
+    def main(self, grounding_dino_model, sam_model, image, prompt, threshold):
+        res_images = []
+        res_masks = []
+        legal_outputs = []
+        prompts_mask_order = []
+        prompt_list = [p.strip() for p in prompt.split("||")]
+
+        for item in image:
+            item = Image.fromarray(
+                np.clip(255. * item.cpu().numpy(), 0, 255).astype(np.uint8)).convert('RGBA')
+            for prompt_id , prompt in enumerate(prompt_list):
+
+                boxes = groundingdino_predict(
+                    grounding_dino_model,
+                    item,
+                    prompt,
+                    threshold
+                )
+                if boxes.shape[0] == 0:
+                    _, height, width, _ = image.size()
+                    empty_mask = torch.zeros((1, height, width), dtype=torch.float32, device="cpu")
+                    empty_image = torch.zeros((1, height, width, 3), dtype=torch.uint8, device="cpu")
+                    res_images.extend([empty_image])
+                    res_masks.extend([empty_mask])
+                    prompts_mask_order.append(torch.tensor([prompt_id]))
+                    legal_outputs.append(torch.tensor([False]))
+                    continue
+                (images, masks) = sam_segment(
+                    sam_model,
+                    item,
+                    boxes
+                )
+                res_images.extend(images)
+                res_masks.extend(masks)
+                legal_outputs.extend([torch.tensor([True])] * len(images))
+                prompts_mask_order.extend([torch.tensor([prompt_id])] * len(images))
+
+            if len(res_images) == 0:
+                _, height, width, _ = image.size()
+                empty_mask = torch.zeros((1, height, width), dtype=torch.uint8, device="cpu")
+                return (empty_mask, empty_mask)
+        return (
+            torch.cat(res_images, dim=0),
+            torch.cat(res_masks, dim=0),
+            torch.cat(legal_outputs, dim=0),
+            torch.cat(prompts_mask_order, dim=0)
+        )
 
 class InvertMask:
     @classmethod
