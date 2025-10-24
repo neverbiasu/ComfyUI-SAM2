@@ -258,6 +258,13 @@ def sam_segment(sam_model, image, boxes):
     masks = np.transpose(masks, (1, 0, 2, 3))
     return create_tensor_output(image_np, masks, boxes)
 
+def offload_models(sam_model, grounding_dino_model, keep_model_loaded):
+    if not keep_model_loaded:
+        device = comfy.model_management.unet_offload_device()
+        sam_model.to(device=device)
+        grounding_dino_model.to(device=device)
+        
+        comfy.model_management.soft_empty_cache()
 
 class SAM2ModelLoader:
     @classmethod
@@ -308,6 +315,7 @@ class GroundingDinoSAM2Segment:
                     "FLOAT",
                     {"default": 0.3, "min": 0, "max": 1.0, "step": 0.01},
                 ),
+                "keep_model_loaded": ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -315,7 +323,11 @@ class GroundingDinoSAM2Segment:
     FUNCTION = "main"
     RETURN_TYPES = ("IMAGE", "MASK")
 
-    def main(self, grounding_dino_model, sam_model, image, prompt, threshold):
+    def main(self, grounding_dino_model, sam_model, image, prompt, threshold, keep_model_loaded):
+        device = comfy.model_management.get_torch_device()
+        sam_model.to(device=device)
+        grounding_dino_model.to(device=device)
+
         res_images = []
         res_masks = []
         for item in image:
@@ -333,9 +345,12 @@ class GroundingDinoSAM2Segment:
             empty_mask = torch.zeros(
                 (1, height, width), dtype=torch.uint8, device="cpu"
             )
-            return (empty_mask, empty_mask)
-        return (torch.cat(res_images, dim=0), torch.cat(res_masks, dim=0))
 
+            offload_models(sam_model, grounding_dino_model, keep_model_loaded)
+            return (empty_mask, empty_mask)
+
+        offload_models(sam_model, grounding_dino_model, keep_model_loaded)
+        return (torch.cat(res_images, dim=0), torch.cat(res_masks, dim=0))
 
 class InvertMask:
     @classmethod
