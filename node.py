@@ -263,7 +263,6 @@ def offload_models(sam_model, grounding_dino_model, keep_model_loaded):
         device = comfy.model_management.unet_offload_device()
         sam_model.to(device=device)
         grounding_dino_model.to(device=device)
-        
         comfy.model_management.soft_empty_cache()
 
 class SAM2ModelLoader:
